@@ -20,6 +20,11 @@ use yii\web\IdentityInterface;
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
+ * @property string $real_name
+ * @property integer $role
+ * @property integer $qq
+ * @property integer $phone
+ * @property string $last_login_at
  * @property string $password write-only password
  */
 class User extends ActiveRecord implements IdentityInterface
@@ -28,6 +33,8 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
 
+    const ROLE_ADMIN = 99;
+    const ROLE_STUDENT = 1;
 
     /**
      * {@inheritdoc}
@@ -55,6 +62,8 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
+            [['qq', 'phone'], 'integer'],
+            [['real_name'], 'string'],
         ];
     }
 
@@ -208,5 +217,70 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+
+    /**
+     * 获取用户名
+     *
+     * @param $id integer
+     * @return string
+     */
+    public static function getNameByID($id)
+    {
+        return static::findOne($id)->username;
+    }
+
+    /**
+     * 获取真实姓名
+     *
+     * @param $id integer
+     * @return string
+     */
+    public static function getRealNameByID($id)
+    {
+        return static::findOne($id)->real_name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => '昵称',
+            'email' => '邮箱',
+            'created_at' => '创建时间',
+            'updated_at' => '最后修改资料时间',
+            'qq' => 'QQ',
+            'phone' => '手机号码',
+            'real_name' => '真实姓名',
+            'last_login_at' => '上次登陆时间',
+        ];
+    }
+
+    /**
+     * 判断当前登陆用户是否实名认证
+     *
+     * @return boolean
+     */
+    public static function isRealNameAuthenticated()
+    {
+        return !empty(static::findOne(Yii::$app->user->id)->real_name);
+    }
+
+    /**
+     * 根据用户名判断当前用户是否是管理员
+     *
+     * @param username
+     * @return boolean
+     */
+    public static function judgeAdminByUsername($username)
+    {
+        $model = static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        if ($model == null) {
+            return false;
+        }
+        return $model->role == self::ROLE_ADMIN;
     }
 }

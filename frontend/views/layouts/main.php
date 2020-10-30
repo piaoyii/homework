@@ -36,23 +36,44 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-        ['label' => 'About', 'url' => ['/site/about']],
-        ['label' => 'Contact', 'url' => ['/site/contact']],
+        //['label' => 'Home', 'url' => ['/site/index']],
+        ['label' => 'Java作业', 'url' => ['/homework/index']],
+        /*['label' => 'Contact', 'url' => ['/site/contact']],*/
     ];
+
+    $menuItems[] = '<li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">小帮手<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                <li><a href="/helper/health-sign-in">健康打卡提醒</a></li>
+                </ul>
+                </li>';
+
+    $menuItems[] = ['label' => '关于', 'url' => ['/site/about']];
+
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
-        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+        $menuItems[] = ['label' => '注册', 'url' => ['/site/signup']];
+        $menuItems[] = ['label' => '登陆', 'url' => ['/site/login']];
     } else {
-        $menuItems[] = '<li>'
+        $li = '<li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">我的<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                <li><a href="/user/index">账户设置</a></li>
+                <li><a href="/homework-finished/index?HomeworkFinishedSearch[user_id]=' . Yii::$app->user->id . '">发表作品</a></li>
+                <li class="divider"></li>
+                <li><a href="/site/logout" data-method="post">'. '退出 (' . Yii::$app->user->identity->username . ')' . '</a></li>
+                </ul>
+                </li>';
+        $menuItems[] = $li;
+/*        $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+                '退出 (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout']
             )
             . Html::endForm()
-            . '</li>';
+            . '</li>';*/
     }
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => $menuItems,
@@ -73,7 +94,7 @@ AppAsset::register($this);
     <div class="container">
         <p class="pull-left">&copy; <?= Html::encode(Yii::$app->name) ?> <?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
+        <p class="pull-right">技术支持：Piaoyii</p>
     </div>
 </footer>
 

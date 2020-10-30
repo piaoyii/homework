@@ -23,6 +23,12 @@ class m130524_201442_init extends Migration
             'status' => $this->smallInteger()->notNull()->defaultValue(10),
             'created_at' => $this->integer()->notNull(),
             'updated_at' => $this->integer()->notNull(),
+
+            'real_name' => $this->string(),
+            'role' => $this->smallInteger()->defaultValue(1),
+            'qq' => $this->char(15),
+            'phone' => $this->char(15),
+            'last_login_at' => $this->dateTime(),
         ], $tableOptions);
     }
 

@@ -6,6 +6,8 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use common\models\User;
+use yii\web\BadRequestHttpException;
 
 /**
  * Site controller
@@ -77,6 +79,11 @@ class SiteController extends Controller
         $this->layout = 'blank';
 
         $model = new LoginForm();
+        if (!empty(Yii::$app->request->post()['LoginForm']['username'])) {
+            if (!User::judgeAdminByUsername(Yii::$app->request->post()['LoginForm']['username'])) {
+                throw new BadRequestHttpException('你想干什么？');
+            }
+        }
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
         } else {
